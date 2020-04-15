@@ -22,11 +22,13 @@ router.route('/')
   });
 
 router.route('/signup')
-  .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+  .options(cors.corsWithOptions, (req, res) =>  res.sendStatus(200))
   .post(cors.corsWithOptions, (req, res, nex) => {
-    User.register(new User({
-        username: req.body.username, firstName: req.body.firstName, lastName:req.body.lastName, phone: req.body.phone, admin: false
-      }),req.body.password, (err, user) => {
+    User.register(
+      new User({username: req.body.username, email: req.body.email, admin: false}),
+      req.body.password, 
+      (err, user) => {
+
         if(err) {
           if (err.name == "UserExistsError") {
             res.statusCode = 409;
@@ -40,36 +42,22 @@ router.route('/signup')
         } 
         else {
             passport.authenticate('local')(req, res, () => {
-              var token = authenticate.getToken({_id: req.user._id})
-              let user = {
-                firstName: req.user.firstName,
-                lastName: req.user.lastName,
-                phone: req.user.phone,
-                username:req.user.username,
-                _id: req.user._id
-              }
+              var token = authenticate.getToken({_id: req.user._id});
               res.statusCode = 200;
               res.setHeader('Content-Type','application/json');
-              res.json({success: true, token: token, status: 'You are successfully registrated', user: user});
+              res.json({token: token, status: 200});
             })
         }
       })
   });
 
 router.route('/login')
-  .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+  .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
   .post(cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
-    var token = authenticate.getToken({_id: req.user._id})
-    let user = {
-      firstName: req.user.firstName,
-      lastName: req.user.lastName,
-      phone: req.user.phone,
-      username:req.user.username,
-      _id: req.user._id
-    }
+    var token = authenticate.getToken({_id: req.user._id});
     res.statusCode = 200;
     res.setHeader('Content-Type','application/json');
-    res.json({success: true, token:token, status: 'You are successfully logged in', user: user})  
+    res.json({token:token, status: 200})  
   });
 
 router.route('/verifyUser')

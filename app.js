@@ -8,7 +8,7 @@ var config = require('./config');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var moviesRoueter = require('./routes/moviesRouter');
+var pickPugPoopResultRouter = require('./routes/pickpugpoopResultsRouter');
 
 //Set up mongoose connection
 const mongoose = require('mongoose');
@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/movies',moviesRoueter);
+app.use('/pickPugPoopResults',pickPugPoopResultRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
