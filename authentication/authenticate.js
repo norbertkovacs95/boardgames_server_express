@@ -5,6 +5,7 @@ var JwtStrategy = require('passport-jwt').Strategy;
 var ExtractJwt = require('passport-jwt').ExtractJwt;
 var jwt = require('jsonwebtoken');
 var config = require('../config');
+var encryption = require('./encryption');
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -15,7 +16,7 @@ opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = config.secretKey;
 passport.use(new JwtStrategy(opts,
     (jwt_payload, done) => {
-        console.log("JWT payload: ", jwt_payload);
+        
         User.findOne({_id: jwt_payload._id}, (err, user) => {
             if (err) {
                 return done(err, false);
@@ -47,3 +48,16 @@ exports.verifyAdmin = function (req, res, next) {
         return next(err);        
     }
 };
+exports.verifyGameStartToken = function(req, res, next) {
+
+    let gameStartToken = encryption.decrypter(req.header('gameStartToken'));
+    let [user,difficulty,expiry] = gameStartToken.split('.');
+    
+    if (user == req.user._id && difficulty == req.body.difficulty) {
+        next();
+    } else {
+        err = new Error('GameStartToken does not matches the game result');
+        err.status = 401;
+        return next(err);
+    }
+}
