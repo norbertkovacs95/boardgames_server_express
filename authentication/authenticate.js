@@ -61,3 +61,19 @@ exports.verifyGameStartToken = function(req, res, next) {
         return next(err);
     }
 }
+exports.getUsername = async function(_id) {
+
+    let resultPromise = new Promise((resolve, reject) => { 
+        User.findOne({_id: _id}, (err, user) => {
+            if (err) {
+                reject(err);
+            }
+            else {
+                resolve(user.username);
+            }
+        })
+    })
+    
+    return resultPromise;
+
+}
